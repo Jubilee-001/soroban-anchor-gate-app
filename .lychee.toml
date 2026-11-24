@@ -1,0 +1,41 @@
+# Lychee link checker configuration for SorobanAnchor Gate
+# See: https://lychee.cli.rs/
+
+[[source]]
+# Include all markdown under docs/, AUDIT/, .github/
+include = ["docs/**/*.md", "AUDIT/**/*.md", ".github/**/*.md"]
+
+# Exclude lockfiles, binaries, and generated assets.
+exclude = ["**/node_modules/**", "**/.next/**", "**/target/**", "*.lock"]
+
+[[check.http]]
+# Timeout per request (seconds).
+timeout = "20s"
+
+# Maximum number of concurrent requests.
+max-concurrency = 10
+
+# Retry failed requests.
+retries = 2
+
+# Ignore localhost / private addresses to avoid CI failures on local-only links.
+exclude = [
+  "http://127.0.0.1*",
+  "http://localhost*",
+  "http://0.0.0.0*",
+]
+
+# Allowed (always-passing) hosts: this repo, GitHub, docs, and Stellar endpoints.
+allow = [
+  "https://github.com/Sorobo-Gate/soroban-anchor-gate-app*",
+  "https://raw.githubusercontent.com/Sorobo-Gate/soroban-anchor-gate-app*",
+  "https://cli.github.com*",
+  "https://github.com/settings/tokens*",
+  "https://developer.mozilla.org*",
+  "https://soroban-testnet.stellar.org*",
+  "https://www.stellar.org*",
+  "https://developers.stellar.org*",
+]
+
+# Status codes treated as success (rate limiting / transient).
+exclude-status-codes = [429, 503]
