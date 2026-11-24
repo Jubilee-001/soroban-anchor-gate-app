@@ -4,7 +4,7 @@
 
 timeout = "20s"
 max_concurrency = 10
-retries = 2
+max_retries = 2
 
 # Ignore localhost / private addresses to avoid CI failures on local-only links.
 exclude = [

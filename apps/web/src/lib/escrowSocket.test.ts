@@ -378,7 +378,7 @@ describe("EscrowSocketClient against a mock WebSocket server", () => {
     await new Promise<void>((r) => probe.wss.close(() => r()));
     // Allow the OS to fully release the port before the client starts retrying,
     // so connection attempts fail immediately instead of briefly succeeding.
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 1000));
 
     const statuses: EscrowSocketStatus[] = [];
     const client = new EscrowSocketClient({
