@@ -2,7 +2,6 @@
 # Compatible with lychee v0.24.x (flat config format)
 # See: https://lychee.cli.rs/
 
-timeout = "20s"
 max_concurrency = 10
 max_retries = 2
 
