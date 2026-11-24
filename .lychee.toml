@@ -1,21 +1,9 @@
 # Lychee link checker configuration for SorobanAnchor Gate
+# Compatible with lychee v0.24.x (flat config format)
 # See: https://lychee.cli.rs/
 
-[[source]]
-# Include all markdown under docs/, AUDIT/, .github/
-include = ["docs/**/*.md", "AUDIT/**/*.md", ".github/**/*.md"]
-
-# Exclude lockfiles, binaries, and generated assets.
-exclude = ["**/node_modules/**", "**/.next/**", "**/target/**", "*.lock"]
-
-[[check.http]]
-# Timeout per request (seconds).
 timeout = "20s"
-
-# Maximum number of concurrent requests.
-max-concurrency = 10
-
-# Retry failed requests.
+max_concurrency = 10
 retries = 2
 
 # Ignore localhost / private addresses to avoid CI failures on local-only links.
@@ -38,4 +26,4 @@ allow = [
 ]
 
 # Status codes treated as success (rate limiting / transient).
-exclude-status-codes = [429, 503]
+exclude_status_codes = [429, 503]
