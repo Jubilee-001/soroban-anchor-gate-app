@@ -21,6 +21,41 @@ pub struct EscrowRecord {
     pub unlock_timestamp: u64,
 }
 
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EscrowInitParams {
+    pub payer: Address,
+    pub beneficiary: Address,
+    pub token: Address,
+    pub amount: i128,
+    pub profile_hash: BytesN<32>,
+    pub lock_duration: u64,
+    pub cancellation_penalty_bps: u32,
+    pub referrer: Option<Address>,
+    pub committed_rate: Option<i128>,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EscrowTerms {
+    pub created_at: u64,
+    pub cancellation_penalty_bps: u32,
+    pub referrer: Option<Address>,
+    pub committed_rate: Option<i128>,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EscrowStream {
+    pub payer: Address,
+    pub beneficiary: Address,
+    pub token: Address,
+    pub rate_per_second: i128,
+    pub last_withdrawn: u64,
+    pub end_time: u64,
+    pub terminated: bool,
+}
+
 /// A single leg of a split payout: one off-chain bank-account commitment that
 /// receives a fixed share of an escrow's distributable balance.
 ///
@@ -45,6 +80,25 @@ pub struct EscrowEntry {
     pub record: EscrowRecord,
 }
 
+/// Proposal for token whitelist modification requiring multi-admin consensus.
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WhitelistProposal {
+    pub proposal_id: u64,
+    pub token: Address,
+    pub whitelisted: bool,
+    pub proposer: Address,
+    pub executed: bool,
+}
+
+/// Rolling 1-hour volume tracker for an asset.
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VolumeTracker {
+    pub window_start: u64,
+    pub volume: i128,
+}
+
 #[contracttype]
 #[derive(Clone)]
 pub enum DataKey {
@@ -55,4 +109,26 @@ pub enum DataKey {
     Escrow(u64),
     TokenWhitelisted(Address),
     WhitelistActive,
+    // Clawback compatibility layer (Issue 51)
+    TokenClawbackFlag(Address),
+    AllowClawbackTokens,
+    // Decentralized keeper incentives (Issue 52)
+    KeeperBountyBps,
+    // Upgradeable contract proxy & migration (Issue 53)
+    ContractVersion,
+    // Multi-token whitelist voting & admin registry (Issue 59)
+    AdminRegistry(Address),
+    AdminCount,
+    WhitelistProposal(u64),
+    ProposalCounter,
+    // Rate-limiting volume governor (Issue 57)
+    TokenVolumeLimit(Address),
+    TokenVolumeTracker(Address),
+    InstitutionalAnchor(Address),
+    EscrowTerms(u64),
+    RateOracle,
+    MaxRateDeviationBps,
+    RateDispute(u64),
+    StreamCounter,
+    Stream(u64),
 }

@@ -33,7 +33,7 @@ module.exports = async ({ github, context, core }) => {
   const issueNumbers = new Set();
 
   // Pattern A: Comma or 'and' separated lists e.g. "Closes #120, #121 and #122" or "Fixes #1, Fixes #2"
-  const multiIssueRegex = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*:?\s*(#[0-9]+(?:\s*(?:,|and|\s)\s*#[0-9]+)*)/gi;
+  const multiIssueRegex = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*:?[ \t]*(#[0-9]+(?:[ \t]*(?:,|and|&)[ \t]*#[0-9]+)*)/gi;
   let match;
   while ((match = multiIssueRegex.exec(prBody)) !== null) {
     const nums = match[1].match(/\d+/g);
@@ -60,21 +60,25 @@ module.exports = async ({ github, context, core }) => {
   }
 
   // Pattern D: "Linked Issue: #42" or "Linked Issues: #42, #43"
-  const linkedRegex = /Linked\s+Issue[s]?\s*:\s*(?:(?:Closes|Fixes|Resolves)\s*)?(#[0-9]+(?:\s*(?:,|and|\s)\s*#[0-9]+)*)/gi;
+  const linkedRegex = /Linked\s+Issue[s]?\s*:\s*(?:(?:Closes|Fixes|Resolves)[ \t]*)?(#[0-9]+(?:[ \t]*(?:,|and|&)[ \t]*#[0-9]+)*)/gi;
   while ((match = linkedRegex.exec(prBody)) !== null) {
     const nums = match[1].match(/\d+/g);
     if (nums) nums.forEach(n => issueNumbers.add(parseInt(n, 10)));
   }
 
-  // Pattern E: Branch names like wave/120 or feat/issues-120-123
-  const branchWave = branchName.match(/^wave\/(\d+)/);
-  if (branchWave) {
-    issueNumbers.add(parseInt(branchWave[1], 10));
-  }
-  const branchFeat = branchName.match(/(?:issue|wave)s?[-/](\d+)(?:[-_](\d+))?/i);
-  if (branchFeat) {
-    if (branchFeat[1]) issueNumbers.add(parseInt(branchFeat[1], 10));
-    if (branchFeat[2]) issueNumbers.add(parseInt(branchFeat[2], 10));
+  // Pattern E: Branch names fallback (ONLY if no explicit issues were declared in PR body or title)
+  // Prevents draft/template branch numbers (e.g. wave/56-...) from overriding or colliding with real issues (e.g. #98)
+  if (issueNumbers.size === 0) {
+    const branchWave = branchName.match(/^wave\/(\d+)/);
+    if (branchWave) {
+      issueNumbers.add(parseInt(branchWave[1], 10));
+    } else {
+      const branchFeat = branchName.match(/(?:issue|wave)s?[-/](\d+)(?:[-_](\d+))?/i);
+      if (branchFeat) {
+        if (branchFeat[1]) issueNumbers.add(parseInt(branchFeat[1], 10));
+        if (branchFeat[2]) issueNumbers.add(parseInt(branchFeat[2], 10));
+      }
+    }
   }
 
   // Validation: Check if at least 1 issue was linked

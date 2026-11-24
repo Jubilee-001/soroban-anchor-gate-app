@@ -6,6 +6,7 @@ import { Address, Contract, rpc, scValToNative } from "@stellar/stellar-sdk";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EscrowWizard } from "@/components/wizard/EscrowWizard";
+import { MobileNav } from "@/components/MobileNav";
 import { getAppConfig } from "@/lib/config";
 import { hashRoutingInfo } from "@/lib/crypto";
 import {
@@ -107,6 +108,7 @@ export default function CreateEscrowPage() {
 
   return (
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <MobileNav className="mb-4" />
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between gap-3">
