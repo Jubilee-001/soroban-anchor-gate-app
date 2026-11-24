@@ -119,8 +119,11 @@ jobs:
       - name: Verify Secret Detection Works (self-test)
         run: |
           echo "🧪 Self-test: secret detection with dummy key..."
-          printf 'SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n' > /tmp/dummy-secret.txt
-          cp /tmp/dummy-secret.txt apps/web/.next/.dummy-secret-check
+          # Build a dummy Stellar secret key (S + 55 chars from [A-Z2-7]) at
+          # runtime so the literal pattern never appears in this workflow file.
+          DUMMY_KEY="S"
+          for i in $(seq 1 55); do DUMMY_KEY="${DUMMY_KEY}A"; done
+          printf '%s\n' "$DUMMY_KEY" > apps/web/.next/.dummy-secret-check
           if grep -rnP '\bS[A-Z2-7]{55}\b' apps/web/.next > /dev/null 2>&1; then
             echo "✅ Self-test PASS: dummy secret key was detected"
           else
@@ -129,7 +132,8 @@ jobs:
             exit 1
           fi
           rm -f apps/web/.next/.dummy-secret-check
-          if ! grep -rnP '\bS[A-Z2-7]{55}\b' apps/web/.next > /dev/null 2>&1; then
+          SECRET_PATTERN='\bS[A-Z2-7]{55}\b'
+          if ! grep -rnP "$SECRET_PATTERN" apps/web/.next > /dev/null 2>&1; then
             echo "✅ Self-test PASS: clean build has no secret leaks"
           else
             echo "❌ Self-test FAIL: clean build has unexpected matches"
@@ -139,11 +143,13 @@ jobs:
       - name: Verify No Secret Leaks in Web Build
         run: |
           echo "🔍 Scanning production .next build for leaked secrets..."
-          MATCHES=$(grep -rnP '\bS[A-Z2-7]{55}\b' apps/web/.next 2>/dev/null || true)
+          SECRET_PATTERN='\bS[A-Z2-7]{55}\b'
+          MATCHES=$(grep -rnP "$SECRET_PATTERN" \
+            apps/web/.next 2>/dev/null || true)
           if [ -n "$MATCHES" ]; then
             echo "❌ SECRET LEAK DETECTED in apps/web/.next"
             echo "$MATCHES"
-            echo "Remove all Stellar secret keys / private keys from the web output before merging."
+            echo "Remove all Stellar secret keys from the web output."
             exit 1
           fi
           echo "✅ No secret leaks detected in apps/web/.next"

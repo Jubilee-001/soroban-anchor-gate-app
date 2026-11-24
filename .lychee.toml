@@ -12,18 +12,3 @@ exclude = [
   "http://localhost*",
   "http://0.0.0.0*",
 ]
-
-# Allowed (always-passing) hosts: this repo, GitHub, docs, and Stellar endpoints.
-allow = [
-  "https://github.com/Sorobo-Gate/soroban-anchor-gate-app*",
-  "https://raw.githubusercontent.com/Sorobo-Gate/soroban-anchor-gate-app*",
-  "https://cli.github.com*",
-  "https://github.com/settings/tokens*",
-  "https://developer.mozilla.org*",
-  "https://soroban-testnet.stellar.org*",
-  "https://www.stellar.org*",
-  "https://developers.stellar.org*",
-]
-
-# Status codes treated as success (rate limiting / transient).
-exclude_status_codes = [429, 503]
