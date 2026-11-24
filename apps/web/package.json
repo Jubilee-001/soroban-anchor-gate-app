@@ -13,7 +13,7 @@
     "build:web": "next build",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/*.test.ts",
+    "test": "node node_modules/tsx/dist/cli.mjs --test src/lib/*.test.ts",
     "analyze": "next analyze",
     "bundle-size": "node scripts/bundle-size.mjs",
     "test:e2e": "playwright test"
