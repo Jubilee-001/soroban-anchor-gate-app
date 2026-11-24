@@ -385,7 +385,7 @@ describe("EscrowSocketClient against a mock WebSocket server", () => {
     for (let i = 0; i < 100 && !unreachable; i++) {
       try {
         await new Promise<void>((resolve, reject) => {
-          const sock = net.Socket();
+          const sock = new net.Socket();
           sock.setTimeout(100);
           sock.once("connect", () => {
             sock.destroy();
